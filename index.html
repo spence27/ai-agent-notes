@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Notes — AI &amp; how buyers pick a real estate agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,400;9..144,0,500;9..144,0,600;9..144,1,400;9..144,1,500;9..144,1,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F0;--ink:#1A1714;--ink-2:#403A32;--mid:#6B6354;--soft:#938A79;
+    --hair:#E4DCCD;--hair-2:#EEE7D9;--accent:#B4502B;--accent-deep:#8A3E20;
+    --dot-empty:#E0D2C2;--good:#4A7350;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  html,body{overflow-x:hidden}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:18px;line-height:1.72;
+    -webkit-font-smoothing:antialiased;font-feature-settings:"kern" 1;
+  }
+  ::selection{background:#E9D9C7}
+
+  .band{padding:78px 0}
+  .band+.band{padding-top:0}
+  .page{max-width:716px;margin:0 auto;padding:0 34px}
+
+  /* type primitives */
+  .kick{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--soft);display:flex;align-items:center;gap:11px;margin-bottom:26px}
+  .kick::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(27px,4.2vw,39px);
+    line-height:1.13;letter-spacing:-.021em;max-width:19ch}
+  h2 em{font-style:italic;color:var(--accent-deep)}
+  .lead{color:var(--mid);font-size:clamp(17px,2vw,20px);line-height:1.6;max-width:60ch;margin-top:20px}
+  .lead em{font-style:italic;color:var(--accent-deep)}
+  p b{color:var(--ink);font-weight:600}
+
+  /* hero */
+  .hero{padding:96px 0 30px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--soft);margin-bottom:34px}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(42px,8vw,82px);
+    line-height:1.0;letter-spacing:-.032em;max-width:13ch}
+  h1 em{font-style:italic;color:var(--accent-deep)}
+  .sub{margin-top:30px;font-size:clamp(18px,2.3vw,22px);color:var(--mid);line-height:1.55;max-width:52ch}
+
+  /* hero teaser */
+  .teaser{margin-top:52px;padding:26px 0 4px;border-top:1px solid var(--hair)}
+  .teaser .tcap{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--soft);margin-bottom:20px}
+  .trow{display:grid;grid-template-columns:104px auto;align-items:center;gap:20px;padding:9px 0}
+  .trow .tl{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--ink-2)}
+
+  /* frequency-dot meter (the one ornament) */
+  .meter{display:inline-flex;gap:6px;align-items:center}
+  .dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--dot-empty);box-sizing:border-box;flex:0 0 auto}
+  .dot.on{background:var(--accent);border-color:var(--accent)}
+
+  /* ledger */
+  .ledger{margin-top:46px;border-top:1px solid var(--ink)}
+  .lrow{display:grid;grid-template-columns:minmax(78px,auto) 1fr auto;align-items:baseline;
+    gap:26px;padding:24px 2px;border-bottom:1px solid var(--hair)}
+  .lrow .fig{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(33px,5.2vw,46px);
+    line-height:.86;letter-spacing:-.025em;color:var(--ink);font-variation-settings:"opsz" 60}
+  .lrow .dsc{font-size:16px;color:var(--ink-2);line-height:1.45}
+  .lrow .src{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.03em;
+    text-transform:uppercase;color:var(--soft);text-align:right;white-space:nowrap}
+  @media(max-width:560px){
+    .lrow{grid-template-columns:auto 1fr;gap:8px 18px}
+    .lrow .fig{grid-row:span 2}
+    .lrow .src{grid-column:2;text-align:left;margin-top:-4px}
+  }
+
+  /* flowing numbered movements */
+  .moves{margin-top:48px}
+  .mv{display:grid;grid-template-columns:38px 1fr;gap:22px;padding:30px 0;border-top:1px solid var(--hair)}
+  .mv:first-child{border-top:none;padding-top:6px}
+  .mv .ix{font-family:'Fraunces',serif;font-size:25px;font-weight:400;color:var(--accent);
+    line-height:1;font-variation-settings:"opsz" 36;font-feature-settings:"lnum" 1}
+  .mv h3{font-family:'Fraunces',serif;font-size:22px;font-weight:600;letter-spacing:-.012em;
+    line-height:1.22;margin-bottom:9px}
+  .mv h3 em{font-style:italic;color:var(--accent-deep)}
+  .mv p{font-size:16px;color:var(--mid);line-height:1.62}
+  .mv p b{color:var(--ink-2)}
+
+  /* is / isn't */
+  .twin{margin-top:44px;border-top:1px solid var(--ink)}
+  .tw{padding:28px 0;border-bottom:1px solid var(--hair)}
+  .tw .tt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;
+    text-transform:uppercase;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+  .tw.is .tt{color:var(--good)}.tw.isnt .tt{color:var(--accent-deep)}
+  .tw p{font-size:16.5px;color:var(--ink-2);line-height:1.55;max-width:58ch}
+
+  /* exhibit (proof table) */
+  .exhibit{margin-top:46px}
+  .exlabel{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;
+    color:var(--mid);line-height:1.6;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--ink)}
+  .exlabel b{color:var(--accent-deep);font-weight:500}
+  table.proof{width:100%;border-collapse:collapse}
+  table.proof th,table.proof td{text-align:left;vertical-align:middle}
+  table.proof thead th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--soft);font-weight:500;padding:0 0 16px}
+  table.proof tbody td{padding:24px 0;border-top:1px solid var(--hair)}
+  table.proof .ag{font-family:'Fraunces',serif;font-size:21px;font-weight:600;letter-spacing:-.01em;padding-right:20px}
+  table.proof .ag small{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+    color:var(--soft);font-weight:400;margin-top:6px;letter-spacing:.02em;text-transform:uppercase}
+  .cell .vd{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.02em;
+    color:var(--mid);display:block;margin-bottom:11px}
+  .cell .rt{display:none;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--soft);margin-left:10px}
+
+  /* two short notes */
+  .duo{margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:42px}
+  .duo .dk{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:11px}
+  .duo h3{font-family:'Fraunces',serif;font-size:20px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;line-height:1.25}
+  .duo p{font-size:15.5px;color:var(--mid);line-height:1.6}
+  .duo p b{color:var(--ink-2)}.duo p em{font-style:italic;color:var(--accent-deep)}
+  @media(max-width:600px){.duo{grid-template-columns:1fr;gap:32px}}
+
+  /* levers list */
+  .levers{margin-top:40px;border-top:1px solid var(--hair)}
+  .lev{display:grid;grid-template-columns:30px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--hair-2);
+    font-size:16.5px;color:var(--ink-2);line-height:1.45}
+  .lev .ln{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);padding-top:2px}
+  .lev b{color:var(--ink)}
+  .sublabel{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--soft);margin-top:44px;display:flex;align-items:center;gap:11px}
+  .sublabel::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+
+  /* pull quote */
+  .pull{font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+    font-size:clamp(21px,3vw,28px);line-height:1.35;letter-spacing:-.012em;
+    margin-top:44px;max-width:24ch}
+  .pull b{font-style:normal;color:var(--accent-deep);font-weight:600}
+
+  /* dark band */
+  .dark{background:var(--ink);color:#E9E2D6}
+  .dark .kick{color:#A99E8C}.dark .kick::before{background:#E08A5B}
+  .dark h2{color:#FBF7EF}
+  .dark .lead{color:#B4AA98}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px;max-width:60ch}
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#B7AB97;
+    text-decoration:line-through;text-decoration-color:#E08A5B;text-decoration-thickness:1.5px}
+  .chip::after{content:"·";margin-left:10px;color:#4A4135;text-decoration:none}
+  .chip:last-child::after{content:""}
+  .dark .pull{color:#FBF7EF;max-width:42ch}.dark .pull b{color:#E08A5B}
+
+  /* traps / job */
+  .cmp{margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:44px}
+  .cmp .ch{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;
+    text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+  .cmp .fail .ch{color:var(--accent-deep)}.cmp .win .ch{color:var(--good)}
+  .cmp .li{display:grid;grid-template-columns:18px 1fr;gap:11px;padding:11px 0;font-size:15.5px;
+    color:var(--ink-2);line-height:1.5;border-top:1px solid var(--hair)}
+  .cmp .li:first-of-type{border-top:none}
+  .cmp .mk{font-family:'IBM Plex Mono',monospace;font-weight:500}
+  .cmp .fail .mk{color:var(--accent-deep)}.cmp .win .mk{color:var(--good)}
+  @media(max-width:600px){.cmp{grid-template-columns:1fr;gap:30px}}
+
+  /* closing */
+  .closing{padding:96px 0 40px}
+  .closing .big{font-family:'Fraunces',serif;font-weight:500;
+    font-size:clamp(26px,4.6vw,42px);line-height:1.22;letter-spacing:-.02em;max-width:21ch}
+  .closing .big em{font-style:italic;color:var(--accent-deep)}
+  .colophon{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--soft);
+    line-height:1.9;border-top:1px solid var(--hair);padding:20px 0 64px;margin-top:60px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+  .reveal{opacity:0;transform:translateY(13px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .d1{animation-delay:.04s}.d2{animation-delay:.15s}.d3{animation-delay:.27s}
+
+  @media(max-width:680px){
+    body{font-size:16.5px}
+    .page{padding:0 24px}
+    .band{padding:54px 0}
+    .hero{padding:60px 0 18px}
+    h2{max-width:none}
+    .pull{max-width:none}
+    .teaser{margin-top:40px}
+    /* proof table → stacked, airy */
+    table.proof thead{display:none}
+    table.proof,table.proof tbody,table.proof tr,table.proof td{display:block;width:100%}
+    table.proof tr{padding:22px 0;border-top:1px solid var(--ink)}
+    table.proof tr:first-child{border-top:none}
+    table.proof tbody td{padding:0;border-top:none}
+    table.proof .ag{padding:0 0 18px}
+    table.proof td.cell{display:grid;grid-template-columns:96px 1fr auto;align-items:center;gap:14px;padding:11px 0}
+    table.proof td.cell::before{content:attr(data-label);font-family:'IBM Plex Mono',monospace;
+      font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--soft)}
+    .cell .vd{display:none}
+    .cell .rt{display:block;margin-left:0;text-align:right}
+  }
+  @media(prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="band hero">
+    <div class="page">
+      <div class="eyebrow reveal d1">Notes · AI × real estate · 2026</div>
+      <h1 class="reveal d1">AI is quietly becoming how buyers pick <em>an&nbsp;agent.</em></h1>
+      <p class="sub reveal d2">I spent a few weeks testing what the AI tools actually say when a buyer asks for an agent. Some of it surprised me. A lot of what's being sold around it is junk.</p>
+      <div class="teaser reveal d3">
+        <div class="tcap">One real agent · the same question · run 7–10× per engine · each dot = one run</div>
+        <div class="trow"><span class="tl">ChatGPT</span><span class="meter"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>
+        <div class="trow"><span class="tl">Google&nbsp;AI</span><span class="meter"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span></div>
+        <div class="trow"><span class="tl">Perplexity</span><span class="meter"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 -->
+  <section class="band">
+    <div class="page">
+      <div class="kick">The shift already happened</div>
+      <h2>Buyers moved to AI to decide who they hire.</h2>
+      <p class="lead">The surveys here are real ones, and the numbers were bigger than I expected. People don't fully trust it yet. They use it anyway.</p>
+      <div class="ledger reveal">
+        <div class="lrow"><div class="fig">82%</div><div class="dsc">of active buyers &amp; sellers now use AI for housing research</div><div class="src">Realtor.com · Aug 2025</div></div>
+        <div class="lrow"><div class="fig">67/54</div><div class="dsc">percent use ChatGPT / Gemini — the two named leaders</div><div class="src">Realtor.com · Aug 2025</div></div>
+        <div class="lrow"><div class="fig">48%</div><div class="dsc">of near-term buyers have or will use AI to buy a home</div><div class="src">NerdWallet · Nov 2025</div></div>
+        <div class="lrow"><div class="fig">9/10</div><div class="dsc">runs where ChatGPT gave a real agent's brokerage wrong</div><div class="src">my testing · Jun 2026</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="band">
+    <div class="page">
+      <div class="kick">What it does to agents</div>
+      <h2>Most agents are invisible to it, or described wrong.</h2>
+      <div class="moves">
+        <div class="mv"><div class="ix">01</div><div><h3>Invisible</h3><p>Ask ChatGPT for the "best agent in [a town]" and the local top producer often simply isn't in the answer. Someone else is.</p></div></div>
+        <div class="mv"><div class="ix">02</div><div><h3>Misrepresented</h3><p>When AI does name an agent, it can get the story wrong — an old brokerage, stale numbers. There's a live example below.</p></div></div>
+        <div class="mv"><div class="ix">03</div><div><h3>Unmonitored</h3><p>Nobody's checking. Nothing in a normal agent's stack surfaces any of this — it all happens out of view.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="band">
+    <div class="page">
+      <div class="kick">What it is, under the hood</div>
+      <h2>Being #1 on Google doesn't mean an AI knows you exist.</h2>
+      <div class="twin">
+        <div class="tw is"><div class="tt">What it is</div><p>Getting ChatGPT, Google's AI, and the rest to <b>find an agent, get them right, and recommend them</b> when a buyer asks. All of it rides on signals the AI already trusts. None of it is a hidden trick.</p></div>
+        <div class="tw isnt"><div class="tt">What it isn't</div><p>A setting to flip, a file to upload, or classic SEO under a new name. And it isn't a single number — which is a big part of why it's so easy to fake.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="band">
+    <div class="page">
+      <div class="kick">The part that surprised me most</div>
+      <h2>There is no single "AI visibility." The engines flatly disagree.</h2>
+      <p class="lead">One question, <em>"best real estate agents in Longmont,"</em> with no names in it. I ran it 7–10 times on each engine, for two real Colorado agents. Here's what came back.</p>
+      <div class="exhibit reveal">
+        <div class="exlabel">EXHIBIT 1 &nbsp;·&nbsp; <b>"best real estate agents in Longmont"</b> &nbsp;·&nbsp; run 7–10× per engine · each dot = one run · how often each agent got named</div>
+        <table class="proof">
+          <thead><tr><th>Agent</th><th>ChatGPT</th><th>Google AI</th><th>Perplexity</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="ag">Carly Mayer<small>787 deals · top producer</small></td>
+              <td class="cell" data-label="ChatGPT"><span class="vd">Sometimes · 4 of 10</span><span class="meter"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="rt">4 of 10</span></td>
+              <td class="cell" data-label="Google AI"><span class="vd">Every time · 7 of 7</span><span class="meter"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span><span class="rt">7 of 7</span></td>
+              <td class="cell" data-label="Perplexity"><span class="vd">Rarely · 1 of 7</span><span class="meter"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="rt">1 of 7</span></td>
+            </tr>
+            <tr>
+              <td class="ag">Krista Köth<small>mid-size solo · Compass</small></td>
+              <td class="cell" data-label="ChatGPT"><span class="vd">Every time · 10 of 10</span><span class="meter"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span><span class="rt">10 of 10</span></td>
+              <td class="cell" data-label="Google AI"><span class="vd">Every time · 7 of 7</span><span class="meter"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span><span class="rt">7 of 7</span></td>
+              <td class="cell" data-label="Perplexity"><span class="vd">Sometimes · 3 of 7</span><span class="meter"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="rt">3 of 7</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pull reveal">The 787-deal top producer got named 4 times out of 10 on ChatGPT, and once out of 7 on Perplexity. The mid-size solo agent: <b>every single run,</b> on two of the three engines.</p>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="band">
+    <div class="page">
+      <div class="kick">Messier than "invisible"</div>
+      <h2>The results are unstable, and AI invents facts.</h2>
+      <div class="duo reveal">
+        <div><div class="dk">Unstable</div><h3>Ask twice, get two answers</h3><p>Run the same question back-to-back and the names change. The honest number is a <em>rate</em> — how many runs out of ten an agent shows up in. A "report" built on one screenshot is mostly noise.</p></div>
+        <div><div class="dk">Wrong</div><h3>It makes up your story</h3><p>In 9 of my 10 ChatGPT runs, it pinned one of those agents to a brokerage <b>she'd already left.</b> Perplexity got it wrong too, with a different wrong answer. AI states things about people that simply aren't true.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="band">
+    <div class="page">
+      <div class="kick">What actually works</div>
+      <h2>The obvious levers, and the less obvious ones.</h2>
+      <p class="lead">The first layer is table stakes — every vendor lists it:</p>
+      <div class="levers reveal">
+        <div class="lev"><span class="ln">01</span><div><b>Reviews</b> — volume and recency; still the biggest signal AI reads.</div></div>
+        <div class="lev"><span class="ln">02</span><div><b>Google Business Profile</b>, which is what Google's AI leans on most.</div></div>
+        <div class="lev"><span class="ln">03</span><div><b>The "best agent" lists</b> (Expertise, U.S. News, etc.), where ChatGPT reads from.</div></div>
+        <div class="lev"><span class="ln">04</span><div><b>One consistent identity</b> across the web, so AI knows it's all one person.</div></div>
+      </div>
+      <div class="sublabel">The second layer is less obvious — and almost nobody is doing it</div>
+      <div class="moves">
+        <div class="mv"><div class="ix">1</div><div><h3>The numbers don't <em>sit still</em></h3><p>Ask again a month later and the names have moved. The engines update, the sources shift, and an agent who showed up half the time can quietly stop showing up. Any one-time "AI audit" is a photo of the weather.</p></div></div>
+        <div class="mv"><div class="ix">2</div><div><h3>Wrong facts don't fix <em>themselves</em></h3><p>That wrong-brokerage answer isn't a glitch. The mistake lives in the sources the AI reads, so it comes back every time someone asks — and the machine repeats it with total confidence until the source itself gets corrected.</p></div></div>
+        <div class="mv"><div class="ix">3</div><div><h3>The answers come from <em>somewhere</em></h3><p>A lot of what AI repeats about local agents traces back to a handful of Reddit and forum threads — real people asking "who's good in [town]?" Those threads sit upstream of the answers. (The shortcut version, paying to seed fake ones, gets accounts banned and doesn't survive the next model update.)</p></div></div>
+        <div class="mv"><div class="ix">4</div><div><h3>A lot of agent sites are <em>blank</em> to AI</h3><p>Blocked crawlers, or everything rendered in JavaScript so the machine sees an empty page. That part is real and fixable. The "llms.txt" and "AI schema" files being sold everywhere, meanwhile, get ignored by the very engines they claim to influence.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 — dark -->
+  <section class="band dark">
+    <div class="page">
+      <div class="kick">The catch worth flagging</div>
+      <h2>This space is already full of confident nonsense.</h2>
+      <p class="lead">A cottage industry has formed around selling agents "AI optimization." Plenty of what it sells does nothing.</p>
+      <div class="chips">
+        <span class="chip">llms.txt files</span>
+        <span class="chip">"GEO schema" packages</span>
+        <span class="chip">mass AI city pages</span>
+        <span class="chip">paid Reddit placement</span>
+        <span class="chip">"guaranteed ChatGPT placement"</span>
+        <span class="chip">"first AI calls in 6 weeks"</span>
+      </div>
+      <p class="pull">And from the outside, an agent has almost no way to tell the real thing from the <b>placebo.</b></p>
+    </div>
+  </section>
+
+  <!-- closing -->
+  <section class="closing">
+    <div class="page">
+      <div class="kick reveal">The short version</div>
+      <div class="big reveal">Where I've landed, for now: the buyer shift is real, and it can actually be <em>measured</em> — that's the part I didn't expect. The industry forming on top of it mostly sells certainty it doesn't have. Still pulling on this.</div>
+      <div class="colophon">
+        <span>Notes on AI &amp; real estate · live cross-engine testing, May–Jun 2026</span>
+        <span>Figures point-in-time · run counts shown</span>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
